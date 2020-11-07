@@ -8,8 +8,9 @@ plugins {
     id("com.vaadin") version "0.14.3.7"
 }
 
-val karibudsl_version = "1.0.3"
+val karibudsl_version = "0.7.5"
 val vaadin_version = "14.4.2"
+val vok_version = "0.9.0"
 
 defaultTasks("clean", "build")
 
@@ -36,7 +37,7 @@ val staging by configurations.creating
 
 dependencies {
     // Karibu-DSL dependency
-    implementation("com.github.mvysny.karibudsl:karibu-dsl:$karibudsl_version")
+    implementation("com.github.mvysny.karibudsl:karibu-dsl:${karibudsl_version}")
 
     // Vaadin 14
     implementation("com.vaadin:vaadin-core:${vaadin_version}") {
@@ -46,6 +47,7 @@ dependencies {
                 "org.webjars.bowergithub.vaadin", "org.webjars.bowergithub.webcomponents")
                 .forEach { exclude(group = it) }
     }
+    //implementation("eu.vaadinonkotlin:vok-framework-jpa:${vok_version}")
     providedCompile("javax.servlet:javax.servlet-api:3.1.0")
 
     // logging
@@ -53,6 +55,11 @@ dependencies {
     implementation("org.slf4j:slf4j-simple:1.7.30")
 
     implementation(kotlin("stdlib-jdk8"))
+    implementation("mysql:mysql-connector-java:5.1.37")
+    implementation("eu.vaadinonkotlin:vok-framework-v10-vokdb:${vok_version}")
+    implementation("com.github.mvysny.vokorm:vok-orm:1.4")
+    implementation("org.mindrot:jbcrypt:0.4")
+    implementation("commons-io:commons-io:2.8.0")
 
     // test support
     testImplementation("com.github.mvysny.kaributesting:karibu-testing-v10:1.2.6")
