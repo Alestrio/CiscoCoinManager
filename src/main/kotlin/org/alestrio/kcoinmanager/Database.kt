@@ -24,7 +24,7 @@ class Database {
 
     private fun populateIfFirstRun() {
         /**
-         * Function used to define default values  for first run
+         * Function used to define default values for first run
          */
         try {
             Setting.getOneBy { "skey= :skey"("skey" to "admin_password") }
