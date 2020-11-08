@@ -8,6 +8,7 @@ import com.vaadin.flow.component.HasElement
 import com.vaadin.flow.component.Key
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.html.Div
+import com.vaadin.flow.component.html.Label
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.login.AbstractLogin
 import com.vaadin.flow.component.login.LoginI18n
@@ -15,8 +16,15 @@ import com.vaadin.flow.component.login.LoginOverlay
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.router.RouterLayout
+import com.vaadin.flow.router.RouterLink
 import com.vaadin.flow.server.PWA
 import org.alestrio.kcoinmanager.data.model.User
+import org.alestrio.kcoinmanager.view.admin.AdminBalanceView
+import org.alestrio.kcoinmanager.view.admin.AdminDashboard
+import org.alestrio.kcoinmanager.view.admin.TransactionsView
+import org.alestrio.kcoinmanager.view.admin.UserCreationView
+import org.alestrio.kcoinmanager.view.user.UserDashboard
+import org.alestrio.kcoinmanager.view.user.UserTransaction
 import org.mindrot.jbcrypt.BCrypt
 import java.lang.NullPointerException
 
@@ -27,16 +35,18 @@ import java.lang.NullPointerException
  */
 @PWA(name = "KCoinManager", shortName = "KCCM")
 class Application : VerticalLayout(), RouterLayout {
+    private var generalContainer:HorizontalLayout
     private var viewContainer: Div
     private var isConnected = false
     private var settings = Database()
     private lateinit var loginOverlay: LoginOverlay
     private var currentUser: User? = null
     private lateinit var loginBtn : Button
+    private var navbar:HorizontalLayout = HorizontalLayout()
 
     init{
         //Navbar definition
-        horizontalLayout {
+        generalContainer = horizontalLayout {
             setSizeFull()
             //Title and logo
             horizontalLayout {
@@ -47,13 +57,9 @@ class Application : VerticalLayout(), RouterLayout {
                 label("KCoinManager")
                 content { align(left, middle) }
             }
-            //Navbar
-            horizontalLayout {
-                setSizeFull()
-                content { align(center, middle) }
-                /*  NAVBAR */
-            }
-        }.add(getLoginFormLayout())
+        }
+        generalContainer.add(getLoginFormLayout())
+        this.updateNavbarDefinition()
         //View Container definition
         viewContainer = div{ setSizeFull() }
         //Footer definition
@@ -100,11 +106,41 @@ class Application : VerticalLayout(), RouterLayout {
                 navigateToMainPage()
                 this.isConnected = true
                 updateBtnDefinition()
+                updateNavbarDefinition()
+                loginOverlay.close()
             } else {
                 loginOverlay.isError = true
                 loginOverlay.close()
             }
         }
+    }
+
+    private fun updateNavbarDefinition() {
+        /**
+         * This is the function defining and displaying the right navabr for the current connection state.
+         * These are not protected in any way yet. We will protect them using the method below :
+         * showRouterLayoutContent()
+         */
+        val adminNavbar = HorizontalLayout()
+            adminNavbar.add(RouterLink("Tableau de bord", AdminDashboard::class.java))
+            adminNavbar.add(RouterLink("Transactions", TransactionsView::class.java))
+            adminNavbar.add(RouterLink("Portefeuilles", AdminBalanceView::class.java))
+            adminNavbar.add(RouterLink("Création d'utilisateur", UserCreationView::class.java))
+            adminNavbar.setSizeFull()
+        val userNavbar = HorizontalLayout()
+            userNavbar.add(RouterLink("Tableau de bord", UserDashboard::class.java))
+            userNavbar.add(RouterLink("Transactions", UserTransaction::class.java))
+            userNavbar.setSizeFull()
+        val unregisteredNavbar =  HorizontalLayout()
+            unregisteredNavbar.add(Label("Vous n'êtes pas connecté."))
+            unregisteredNavbar.setSizeFull()
+        this.navbar.removeFromParent()
+        this.navbar = unregisteredNavbar
+        if(this.isConnected){
+            if (this.currentUser!!.pseudo == "ADMIN") this.navbar = adminNavbar
+            else this.navbar = userNavbar
+        }
+        this.generalContainer.addComponentAtIndex(1, this.navbar)
     }
 
     private fun setDataSource() {
@@ -121,16 +157,27 @@ class Application : VerticalLayout(), RouterLayout {
 
 
     override fun showRouterLayoutContent(content: HasElement) {
+        /**
+         * This is the function responsible for displaying the views inside the viewContainer.
+         * It'll also be responsible for checking if the current user has the right to access the page
+         * he is requesting.
+         */
         viewContainer.removeAll()
         viewContainer.element.appendChild(content.element)
     }
 
     private fun updateBtnDefinition() {
+        /**
+         * This is the function updating the button when the user logs-in
+         */
         this.loginBtn.text = this.currentUser?.pseudo
         this.loginBtn.addClickListener { this.disconnect() }
     }
 
     private fun disconnect(){
+        /**
+         * This is the function handling a user logout
+         */
         this.currentUser = null
         this.loginBtn.text = "Se connecter"
         this.loginBtn.addClickListener { loginOverlay.isOpened = true }
@@ -179,7 +226,7 @@ class Application : VerticalLayout(), RouterLayout {
          */
 
         private fun navigateToMainPage() {
-            TODO()
+
         }
 
         private fun hashPassword(password: String?):String{
