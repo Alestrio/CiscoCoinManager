@@ -49,7 +49,7 @@ class Application : VerticalLayout(), RouterLayout {
                 /*  NAVBAR */
             }
             //Login Form
-            getloginFormLayout()
+            getLoginFormLayout()
         }
         //View Container definition
         viewContainer = div{ setSizeFull() }
@@ -63,7 +63,7 @@ class Application : VerticalLayout(), RouterLayout {
         this.setDataSource()
     }
 
-    private fun getloginFormLayout() : HorizontalLayout {
+    private fun getLoginFormLayout() : HorizontalLayout {
         /**
          * Function creating the login form layout
          */
@@ -86,7 +86,7 @@ class Application : VerticalLayout(), RouterLayout {
          * Listener for the login form
          */
         loginOverlay.addLoginListener { e ->
-            val isAuthenticated: Boolean = appLogin(e)
+            val isAuthenticated: Boolean = Companion.appLogin(this, e)
             if (isAuthenticated) {
                 navigateToMainPage()
                 this.isConnected = true
@@ -109,42 +109,50 @@ class Application : VerticalLayout(), RouterLayout {
         JdbiOrm.setDataSource(cfg)
     }
 
-    private fun appLogin(e: AbstractLogin.LoginEvent?): Boolean {
-        /**
-         * This is the function handling the login logic
-         */
-        //Admin connection
-        return if(e?.username.equals("admin")) {
-            //first connection line, password check is then replaced by hashed password check
-            if(e?.password.equals("admin") && settings.getSettingByKey("admin_password")?.equals("admin")!!) true
-            else hashPassword(e?.password) == settings.getSettingByKey("admin_password")
-        }
-        //Regular user connection
-        else{
-            return try{
-                val user = User.getOneBy("pseudo= :pseudo"){  ("pseudo" to e?.username) }
-                return (hashPassword(e?.password) == user.password)
-            }catch (ex : IllegalStateException){
-                false
-            }
-        }
-    }
-    private fun hashPassword(password: String?):String{
-        /**
-         * This is the function hashing and salting the passwords
-         */
-        return BCrypt.hashpw(password, BCrypt.gensalt())
-    }
-
-
-    private fun navigateToMainPage() {
-        TODO()
-    }
-
 
     override fun showRouterLayoutContent(content: HasElement) {
         viewContainer.removeAll()
         viewContainer.element.appendChild(content.element)
+    }
+
+    companion object {
+        /**
+         * This is the Controller-Model for the Application class
+         * Basically, it allows to separate the View from the Logic, without
+         * being bothered by importing/declaring explicitly the Controller-Model
+         */
+
+        private fun navigateToMainPage() {
+            TODO()
+        }
+
+        private fun hashPassword(password: String?):String{
+            /**
+             * This is the function hashing and salting the passwords
+             */
+            return BCrypt.hashpw(password, BCrypt.gensalt())
+        }
+
+        private fun appLogin(application: Application, e: AbstractLogin.LoginEvent?): Boolean {
+            /**
+             * This is the function handling the login logic
+             */
+            //Admin connection
+            return if(e?.username.equals("admin")) {
+                //first connection line, password check is then replaced by hashed password check
+                if(e?.password.equals("admin") && application.settings.getSettingByKey("admin_password")?.equals("admin")!!) true
+                else hashPassword(e?.password) == application.settings.getSettingByKey("admin_password")
+            }
+            //Regular user connection
+            else{
+                return try{
+                    val user = User.getOneBy("pseudo= :pseudo"){  ("pseudo" to e?.username) }
+                    return (hashPassword(e?.password) == user.password)
+                }catch (ex : IllegalStateException){
+                    false
+                }
+            }
+        }
     }
 }
 
