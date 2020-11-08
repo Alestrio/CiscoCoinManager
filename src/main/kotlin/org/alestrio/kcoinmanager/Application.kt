@@ -6,6 +6,7 @@ import com.gitlab.mvysny.jdbiorm.JdbiOrm
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource
 import com.vaadin.flow.component.HasElement
 import com.vaadin.flow.component.Key
+import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.html.Div
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.login.AbstractLogin
@@ -30,6 +31,8 @@ class Application : VerticalLayout(), RouterLayout {
     private var isConnected = false
     private var settings = Database()
     private lateinit var loginOverlay: LoginOverlay
+    private var currentUser: User? = null
+    private lateinit var loginBtn : Button
 
     init{
         //Navbar definition
@@ -78,9 +81,9 @@ class Application : VerticalLayout(), RouterLayout {
             header.description = "Veuillez vous connecter afin d'accéder à votre tableau de bord !"
             loginText.header = header
             loginOverlay.setI18n(loginText)
-            val btn = button("Se connecter")
-            btn.isVisible = true
-            btn.addClickListener { loginOverlay.isOpened = true }
+            loginBtn = button("Se connecter")
+            loginBtn.isVisible = true
+            loginBtn.addClickListener { loginOverlay.isOpened = true }
             loginOverlay.addShortcut(KeyShortcut(Key.ESCAPE)) {
                 loginOverlay.close()
             }
@@ -96,6 +99,7 @@ class Application : VerticalLayout(), RouterLayout {
             if (isAuthenticated) {
                 navigateToMainPage()
                 this.isConnected = true
+                updateBtnDefinition()
             } else {
                 loginOverlay.isError = true
                 loginOverlay.close()
@@ -121,6 +125,52 @@ class Application : VerticalLayout(), RouterLayout {
         viewContainer.element.appendChild(content.element)
     }
 
+    private fun updateBtnDefinition() {
+        this.loginBtn.text = this.currentUser?.pseudo
+        this.loginBtn.addClickListener { this.disconnect() }
+    }
+
+    private fun disconnect(){
+        this.currentUser = null
+        this.loginBtn.text = "Se connecter"
+        this.loginBtn.addClickListener { loginOverlay.isOpened = true }
+    }
+
+    private fun appLogin(application: Application, e: AbstractLogin.LoginEvent?): Boolean {
+        /**
+         * This is the function handling the login logic
+         */
+        //Admin connection
+        if(e?.username.equals("admin")) {
+            //first connection line, password check is then replaced by hashed password check
+            return if(e?.password.equals("admin") && application.settings.getSettingByKey("admin_password")?.equals("admin")!!){
+                this.currentUser = User(id = null, pseudo = "ADMIN", balance = 0, password = "" )
+                true
+            } else if(hashPassword(e?.password) == application.settings.getSettingByKey("admin_password")) {
+                this.currentUser = User(id = null, pseudo = "ADMIN", balance = 0, password = "" )
+                true
+            } else false
+        }
+        //Regular user connection
+        else{
+            return try {
+                val users = User.findAll()
+                val user: User?
+                user = users.find { it.pseudo == e?.username }
+                try {
+                    if(hashPassword(e?.password) == user!!.password){
+                        this.currentUser = user
+                        true
+                    } else false
+                } catch (ex: NullPointerException) {
+                    false
+                }
+            }catch (ex : IllegalStateException){
+                false
+            }
+        }
+    }
+
     companion object {
         /**
          * This is the Controller-Model for the Application class
@@ -139,32 +189,6 @@ class Application : VerticalLayout(), RouterLayout {
             return BCrypt.hashpw(password, BCrypt.gensalt())
         }
 
-        private fun appLogin(application: Application, e: AbstractLogin.LoginEvent?): Boolean {
-            /**
-             * This is the function handling the login logic
-             */
-            //Admin connection
-            return if(e?.username.equals("admin")) {
-                //first connection line, password check is then replaced by hashed password check
-                if(e?.password.equals("admin") && application.settings.getSettingByKey("admin_password")?.equals("admin")!!) true
-                else hashPassword(e?.password) == application.settings.getSettingByKey("admin_password")
-            }
-            //Regular user connection
-            else{
-                return try {
-                    val users = User.findAll()
-                    val user: User?
-                    user = users.find { it.pseudo == e?.username }
-                    return try {
-                        (hashPassword(e?.password) == user!!.password)
-                    } catch (ex: NullPointerException) {
-                        false
-                    }
-                }catch (ex : IllegalStateException){
-                    false
-                }
-            }
-        }
     }
 }
 

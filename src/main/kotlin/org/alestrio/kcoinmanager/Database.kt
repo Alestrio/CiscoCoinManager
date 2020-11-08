@@ -8,7 +8,7 @@ import java.lang.IllegalStateException
 import kotlin.collections.HashMap
 
 class Database {
-    var settings : HashMap<String, String>
+    private var settings : HashMap<String, String>
 
     init{
         // This is only for pure testing,this DB exist only on my computer.
