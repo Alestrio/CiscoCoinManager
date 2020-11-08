@@ -26,7 +26,8 @@ class UserCreationView : VerticalLayout(){
                 textField("Mot de passe") {
                     bind(binder).bind(User::password)
                 }
-                button("Créer l'utilisateur (celui-ci devra modifier son mot de passe à la première utilisation de l'application"){
+                label("(L'utilisateur devra modifier son mot de passe à la première utilisation de l'application)")
+                button("Créer l'utilisateur"){
                     onLeftClick {
                         val user = user!!
                         if(binder.validate().isOk && binder.writeBeanIfValid(user)){
