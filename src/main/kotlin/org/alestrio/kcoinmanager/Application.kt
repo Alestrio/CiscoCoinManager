@@ -2,6 +2,9 @@ package org.alestrio.kcoinmanager
 
 
 import com.github.mvysny.karibudsl.v10.*
+import com.github.vokorm.getOneBy
+import com.gitlab.mvysny.jdbiorm.JdbiOrm
+import com.mysql.jdbc.jdbc2.optional.MysqlDataSource
 import com.vaadin.flow.component.HasElement
 import com.vaadin.flow.component.Key
 import com.vaadin.flow.component.dependency.HtmlImport
@@ -15,13 +18,15 @@ import com.vaadin.flow.router.RouterLayout
 import com.vaadin.flow.server.PWA
 import com.vaadin.flow.theme.Theme
 import com.vaadin.flow.theme.lumo.Lumo
+import org.alestrio.kcoinmanager.data.model.User
 import org.mindrot.jbcrypt.BCrypt
+import java.lang.IllegalStateException
 
 /**
  * This is the class which is creating the navbar, and handling the changes for view.
  * It's also responsible for checking the connection state of the user.
  */
-@PWA(name = "KCiscoCoinManager", shortName = "KCCM")
+@PWA(name = "KCoinManager", shortName = "KCCM")
 class Application : VerticalLayout(), RouterLayout {
     private var viewContainer: Div
     private var isConnected = false
@@ -69,6 +74,7 @@ class Application : VerticalLayout(), RouterLayout {
             icon(VaadinIcon.HEART)
             label("for the RT !")
         }
+        //Listener for the login form
         loginOverlay.addLoginListener { e ->
             val isAuthenticated: Boolean = appLogin(e)
             if (isAuthenticated) {
@@ -79,24 +85,34 @@ class Application : VerticalLayout(), RouterLayout {
                 loginOverlay.close()
             }
         }
+        //Datasource
+        // This is only for pure testing,this DB exist only on my computer.
+        // All of these would be moved to another file for production use sake
+        val cfg = MysqlDataSource()
+        cfg.setURL("jdbc:mysql://127.0.0.1:3306/ciscocoin")
+        cfg.user = "alexis"
+        cfg.setPassword("alexis")
+        JdbiOrm.setDataSource(cfg)
     }
 
     private fun appLogin(e: AbstractLogin.LoginEvent?): Boolean {
         /**
          * This is the function handling the login logic
          */
-        return when {
-            //Admin connection
-            e?.username.equals("admin") -> {
-                //first connection line, password check is then replaced by hashed password check
-                if(e?.password.equals("admin") && settings.getSettingByKey("admin_password")?.equals("admin")!!) true
-                else hashPassword(e?.password) == settings.getSettingByKey("admin_password")
+        //Admin connection
+        return if(e?.username.equals("admin")) {
+            //first connection line, password check is then replaced by hashed password check
+            if(e?.password.equals("admin") && settings.getSettingByKey("admin_password")?.equals("admin")!!) true
+            else hashPassword(e?.password) == settings.getSettingByKey("admin_password")
+        }
+        //Regular user connection
+        else{
+            return try{
+                val user = User.getOneBy("pseudo= :pseudo"){  ("pseudo" to e?.username) }
+                return (hashPassword(e?.password) == user.password)
+            }catch (ex : IllegalStateException){
+                false
             }
-            //Regular user connection
-            e?.username.equals(e?.username + "_username") -> {
-                hashPassword(e?.password) == settings.getSettingByKey(e?.username + "_password")
-            }
-            else -> false
         }
     }
     private fun hashPassword(password: String?):String{

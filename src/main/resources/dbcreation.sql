@@ -2,6 +2,7 @@ create table User (
     id bigint primary key auto_increment,
     pseudo varchar(400) not null,
     balance integer not null,
+    password varchar(400) not null,
     modified timestamp(3) not null
 );
 create table Transaction (

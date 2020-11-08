@@ -10,7 +10,8 @@ data class User(
      */
     override var id : Long? = null,
     var pseudo:String = "",
-    var balance:Int = 0
+    var balance:Int = 0,
+    var password:String = ""
 
 ): KEntity<Long>{
     override fun save(validate: Boolean){
