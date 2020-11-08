@@ -9,6 +9,7 @@ import com.vaadin.flow.component.Key
 import com.vaadin.flow.component.html.Div
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.login.AbstractLogin
+import com.vaadin.flow.component.login.LoginI18n
 import com.vaadin.flow.component.login.LoginOverlay
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
@@ -71,6 +72,12 @@ class Application : VerticalLayout(), RouterLayout {
             content { align(right, top) }
             //Login overlay
             loginOverlay = LoginOverlay()
+            val loginText = LoginI18n.createDefault()
+            val header = LoginI18n.Header()
+            header.title = "KCoinManager"
+            header.description = "Veuillez vous connecter afin d'accéder à votre tableau de bord !"
+            loginText.header = header
+            loginOverlay.setI18n(loginText)
             val btn = button("Se connecter")
             btn.isVisible = true
             btn.addClickListener { loginOverlay.isOpened = true }
@@ -98,7 +105,7 @@ class Application : VerticalLayout(), RouterLayout {
 
     private fun setDataSource() {
         /** Datasource
-         * This is only for pure testing,this DB exist only on my computer.
+         * This is only for pure testing,this DB exists only on my computer.
          * All of these would be moved to another file for production use sake
          */
         val cfg = MysqlDataSource()
