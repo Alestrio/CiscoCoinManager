@@ -197,10 +197,12 @@ class Application : VerticalLayout(), RouterLayout {
             return if(e?.password.equals("admin") && application.settings.getSettingByKey("admin_password")?.equals("admin")!!){
                 this.currentUser = User(id = null, pseudo = "ADMIN", balance = 0, password = "" )
                 true
-            } else if(hashPassword(e?.password) == application.settings.getSettingByKey("admin_password")) {
+            } else if(BCrypt.checkpw(e?.password, application.settings.getSettingByKey("admin_password"))) {
                 this.currentUser = User(id = null, pseudo = "ADMIN", balance = 0, password = "" )
                 true
-            } else false
+            } else{
+                false
+            }
         }
         //Regular user connection
         else{
@@ -209,7 +211,7 @@ class Application : VerticalLayout(), RouterLayout {
                 val user: User?
                 user = users.find { it.pseudo == e?.username }
                 try {
-                    if(hashPassword(e?.password) == user!!.password){
+                    if(BCrypt.checkpw(e?.password, user!!.password)){
                         this.currentUser = user
                         true
                     } else false
@@ -237,7 +239,7 @@ class Application : VerticalLayout(), RouterLayout {
             /**
              * This is the function hashing and salting the passwords
              */
-            return BCrypt.hashpw(password, BCrypt.gensalt())
+            return BCrypt.hashpw(password!!, BCrypt.gensalt())
         }
 
     }
