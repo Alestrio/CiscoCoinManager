@@ -127,13 +127,16 @@ class Application : VerticalLayout(), RouterLayout {
             adminNavbar.add(RouterLink("Portefeuilles", AdminBalanceView::class.java))
             adminNavbar.add(RouterLink("Création d'utilisateur", UserCreationView::class.java))
             adminNavbar.setSizeFull()
+            adminNavbar.content { align(center, middle) }
         val userNavbar = HorizontalLayout()
             userNavbar.add(RouterLink("Tableau de bord", UserDashboard::class.java))
             userNavbar.add(RouterLink("Transactions", UserTransaction::class.java))
             userNavbar.setSizeFull()
+            userNavbar.content { align(center, middle) }
         val unregisteredNavbar =  HorizontalLayout()
             unregisteredNavbar.add(Label("Vous n'êtes pas connecté."))
             unregisteredNavbar.setSizeFull()
+            unregisteredNavbar.content { align(center, middle) }
         this.navbar.removeFromParent()
         this.navbar = unregisteredNavbar
         if(this.isConnected){
@@ -181,6 +184,7 @@ class Application : VerticalLayout(), RouterLayout {
         this.currentUser = null
         this.loginBtn.text = "Se connecter"
         this.loginBtn.addClickListener { loginOverlay.isOpened = true }
+        loginOverlay.close()
     }
 
     private fun appLogin(application: Application, e: AbstractLogin.LoginEvent?): Boolean {

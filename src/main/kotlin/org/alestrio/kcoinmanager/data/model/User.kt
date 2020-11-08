@@ -2,6 +2,7 @@ package org.alestrio.kcoinmanager.data.model
 
 import com.github.vokorm.KEntity
 import com.gitlab.mvysny.jdbiorm.Dao
+import org.mindrot.jbcrypt.BCrypt
 import java.time.Instant
 
 data class User(
@@ -20,4 +21,9 @@ data class User(
     }
 
     companion object : Dao<User, Long>(User::class.java)
+
+    fun hashPassword(){
+        val oldPw = this.password
+        this.password = BCrypt.hashpw(this.password, BCrypt.gensalt())
+    }
 }

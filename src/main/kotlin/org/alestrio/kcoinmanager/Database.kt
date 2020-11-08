@@ -4,6 +4,7 @@ import com.github.vokorm.getOneBy
 import com.gitlab.mvysny.jdbiorm.JdbiOrm
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource
 import org.alestrio.kcoinmanager.data.model.Setting
+import org.mindrot.jbcrypt.BCrypt
 import java.lang.IllegalStateException
 import kotlin.collections.HashMap
 
@@ -53,5 +54,11 @@ class Database {
          * Getter for properties
          */
         return this.settings[key]
+    }
+
+    fun updateAdminPassword(password:String){
+        val adminPwSetting = Setting.getOneBy{"skey= :skey"("skey" to "admin_password")}
+        adminPwSetting.value = BCrypt.hashpw(password, BCrypt.gensalt())
+        adminPwSetting.save()
     }
 }
