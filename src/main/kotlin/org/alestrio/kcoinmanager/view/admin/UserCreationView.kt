@@ -1,6 +1,7 @@
 package org.alestrio.kcoinmanager.view.admin
 
 import com.github.mvysny.karibudsl.v10.*
+import com.vaadin.flow.component.notification.Notification
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.router.Route
 import org.alestrio.kcoinmanager.Application
@@ -33,6 +34,7 @@ class UserCreationView : VerticalLayout(){
                         if(binder.validate().isOk && binder.writeBeanIfValid(user)){
                             user.hashPassword()
                             user.save()
+                            Notification.show("L'utilisateur a été créé !")
                         }
                     }
                 }
@@ -44,6 +46,7 @@ class UserCreationView : VerticalLayout(){
                     onLeftClick {
                         val notHashedPw = newPw.value
                         Database().updateAdminPassword(notHashedPw)
+                        Notification.show("Le mot de passe a bien été mis à jour !")
                     }
                 }
             }
