@@ -1,32 +1,15 @@
 [![Powered By Vaadin on Kotlin](http://vaadinonkotlin.eu/iconography/vok_badge.svg)](http://vaadinonkotlin.eu)
-[![Heroku](https://heroku-badge.herokuapp.com/?app=karibu10-helloworld-app&style=flat&svg=1)](https://karibu10-helloworld-app.herokuapp.com/)
-[![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/mvysny/karibu10-helloworld-application)
 
-# Hello, Vaadin 👋
+# Introduction
+> It started out just as a joke, it is still a joke, but with many hours of work
 
-A simple "Hello, World" application in Vaadin 14 and Kotlin.
+This is a web app intended to manage a virtual, no-value, imaginary currency named CiscoCoin, invented by our Photofiltre Pro-Master : "Captain Megaphone"
 
-This project can be used as a starting point to create your own Vaadin 14+ application.
-It has the necessary dependencies and files to get you started.
-Just clone this repo and start experimenting! Import it to the IDE of your choice as a Gradle project.
+This project is based on the VoK Starter helloworld project you can find here :
+https://github.com/mvysny/karibu10-helloworld-application
 
-[MainView.kt](src/main/kotlin/com/vaadin/flow/demo/helloworld/MainView.kt):
 
-```kotlin
-verticalLayout(classNames = "centered-content") {
-    textField("Your name")
-    button("Say hello") {
-        setPrimary(); addClickShortcut(Key.ENTER)
-    }
-}
-```
-                                         
 Uses [Karibu-DSL](https://github.com/mvysny/karibu-dsl) Kotlin bindings for the [Vaadin](https://vaadin.com) framework.
-
-[Online Demo of this app](https://karibu10-helloworld-app.herokuapp.com) running on Heroku.
-
-> Note: this example project uses Gradle. For Maven-based example project please visit
-> [karibu10-helloworld-application-maven](https://github.com/mvysny/karibu10-helloworld-application-maven).
 
 # Preparing Environment
 
@@ -44,8 +27,8 @@ Alternatively, you can install nodejs and npm to your OS:
 To quickly start the app, just type this into your terminal:
 
 ```bash
-git clone https://github.com/mvysny/karibu10-helloworld-application
-cd karibu10-helloworld-application
+git clone https://github.com/Alestrio/KCoinManager
+cd KCoinManager
 ./gradlew appRun
 ```
 
@@ -58,8 +41,6 @@ to edit the project files. The Community edition is enough to run the server
 via Gretty's `./gradlew appRun`. The Ultimate edition will allow you to run the
 project in Tomcat - this is the recommended
 option for a real development.
-
-> This is a port of [Skeleton Starter Flow](https://github.com/vaadin/skeleton-starter-flow) to Kotlin+Gradle.
 
 ## Supported Modes
 
@@ -126,54 +107,7 @@ Let's look at all files that this project is composed of, and what are the point
 | [simplelogger.properties](src/main/resources/simplelogger.properties) | We're using [Slf4j](https://www.slf4j.org/) for logging and this is the configuration file for [Slf4j Simple Logger](https://www.slf4j.org/api/org/slf4j/impl/SimpleLogger.html).
 | [webapp/](src/main/webapp) | static files provided as-is to the browser.
 | [src/main/kotlin/](src/main/kotlin) | The main Kotlin sources of your web app. You'll be mostly editing files located in this folder.
-| [MainView.kt](src/main/kotlin/com/vaadin/flow/demo/helloworld/MainView.kt) | When Servlet Container (such as [Tomcat](http://tomcat.apache.org/)) starts your app, it will show the components attached to the main route, in this case, the `MainView` class.
-| [MainViewTest.kt](src/test/kotlin/com/vaadin/flow/demo/helloworld/MainViewTest.kt) | Automatically run by Gradle to test your UI; see [Karibu Testing](https://github.com/mvysny/karibu-testing) for more information.
-
-# GitPod
-
-A preliminary support for editing the project in GitPod is available. Visit the
-[karibu10-helloworld-app on GitPod](https://gitpod.io/#https://github.com/mvysny/karibu10-helloworld-application)
-to start. Please wait a bit to allow GitPod to compile the project and download all files.
-The app preview will be started automatically.
-
-Couple of tips:
-* Modify `src/main/kotlin/com/vaadin/flow/demo/helloworld/MainView.kt` to toy with the project.
-* The Gretty/Gradle code will hot-reload changes in the `MainView.kt` automatically after a couple of seconds.
-* If the hot-reload fails and you see any nasty java `IllegalAccessErrors`, or if you
-  start getting `ERROR dev-webpack` errors, just kill Gretty and start it from scratch:
-   * Focus the "/workspace/karibu10-helloworld-application" tab at the bottom, where the `:appRun` task is running
-   * Press `Ctrl+C` to kill Gradle+Gretty
-   * Run `./gradlew appRun` to recompile and relaunch your project
-   * In the "PREVIEW" window, reload the page.
-   * See [Issue 63](https://github.com/vaadin/vaadin-gradle-plugin/issues/63) for more details.
-
-# Docker
-
-Use the following `Dockerfile` to both build the app, and to create a final production container:
-
-```dockerfile
-# Build stage
-FROM openjdk:11 AS BUILD
-RUN git clone https://github.com/mvysny/karibu10-helloworld-application /app
-WORKDIR app
-RUN ./gradlew -Pvaadin.productionMode
-
-# Run stage
-FROM tomcat:9.0.35-jdk11-openjdk
-COPY --from=BUILD /app/build/libs/app.war /usr/local/tomcat/webapps/ROOT.war
-```
-
-To build the docker image:
-```bash
-docker build -t mvy/karibu10:latest .
-```
-
-To run the app:
-```bash
-docker run --rm -ti -p 8080:8080 mvy/karibu10
-```
-
-Now open [http://localhost:8080/](http://localhost:8080/).
+| [MainView.kt](src/main/kotlin/org/alestrio/kcoinmanager/view/WelcomeView.kt) | When Servlet Container (such as [Tomcat](http://tomcat.apache.org/)) starts your app, it will show the components attached to the main route, in this case, the `WelcomeView` class.
 
 # More Resources
 
@@ -185,3 +119,13 @@ Now open [http://localhost:8080/](http://localhost:8080/).
   It is a port of the Vaadin official Java [Beverage Buddy App Starter](https://github.com/vaadin/beverage-starter-flow) to Kotlin + Karibu DSL.
 * For information on how to connect the UI to the database backend please visit [Vaadin-on-Kotlin](http://www.vaadinonkotlin.eu/)
   You can find a complete CRUD example at [Vaadin-on-Kotlin vok-example-flow-sql2o](https://github.com/mvysny/vaadin-on-kotlin#vaadin-10-flow-example-project).
+
+# Author, contributors :
+- Codebase : @mvysny
+- Idea : Captain Megaphone
+- Code : @Alestrio
+
+# Conclusion
+> What am I doing ?
+>
+Alexis LEBEL, 2020
