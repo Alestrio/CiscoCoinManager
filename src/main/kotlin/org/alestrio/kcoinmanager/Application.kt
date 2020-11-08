@@ -2,28 +2,24 @@ package org.alestrio.kcoinmanager
 
 
 import com.github.mvysny.karibudsl.v10.*
-import com.github.vokorm.getOneBy
 import com.gitlab.mvysny.jdbiorm.JdbiOrm
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource
 import com.vaadin.flow.component.HasElement
 import com.vaadin.flow.component.Key
-import com.vaadin.flow.component.dependency.HtmlImport
 import com.vaadin.flow.component.html.Div
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.login.AbstractLogin
 import com.vaadin.flow.component.login.LoginOverlay
-import com.vaadin.flow.component.orderedlayout.FlexComponent
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.router.RouterLayout
 import com.vaadin.flow.server.PWA
-import com.vaadin.flow.theme.Theme
-import com.vaadin.flow.theme.lumo.Lumo
 import org.alestrio.kcoinmanager.data.model.User
 import org.mindrot.jbcrypt.BCrypt
-import java.lang.IllegalStateException
+
 
 /**
- * This is the class which is creating the navbar, and handling the changes for view.
+ * This is the class which is creating the navbar and footer, and handling the changes for view.
  * It's also responsible for checking the connection state of the user.
  */
 @PWA(name = "KCoinManager", shortName = "KCCM")
@@ -35,7 +31,7 @@ class Application : VerticalLayout(), RouterLayout {
 
     init{
         //Navbar definition
-        horizontalLayout() {
+        horizontalLayout {
             setSizeFull()
             //Title and logo
             horizontalLayout {
@@ -53,18 +49,7 @@ class Application : VerticalLayout(), RouterLayout {
                 /*  NAVBAR */
             }
             //Login Form
-            horizontalLayout {
-                setSizeFull()
-                content { align(right, middle) }
-                //Login overlay
-                loginOverlay = LoginOverlay()
-                val btn = button("Se connecter")
-                btn.isVisible = true
-                btn.addClickListener { loginOverlay.isOpened = true }
-                loginOverlay.addShortcut(KeyShortcut(Key.ESCAPE)) {
-                    loginOverlay.close()
-                }
-            }
+            getloginFormLayout()
         }
         //View Container definition
         viewContainer = div{ setSizeFull() }
@@ -74,7 +59,32 @@ class Application : VerticalLayout(), RouterLayout {
             icon(VaadinIcon.HEART)
             label("for the RT !")
         }
-        //Listener for the login form
+        this.setLoginFormListener()
+        this.setDataSource()
+    }
+
+    private fun getloginFormLayout() : HorizontalLayout {
+        /**
+         * Function creating the login form layout
+         */
+        return horizontalLayout {
+            setSizeFull()
+            content { align(right, middle) }
+            //Login overlay
+            loginOverlay = LoginOverlay()
+            val btn = button("Se connecter")
+            btn.isVisible = true
+            btn.addClickListener { loginOverlay.isOpened = true }
+            loginOverlay.addShortcut(KeyShortcut(Key.ESCAPE)) {
+                loginOverlay.close()
+            }
+        }
+    }
+
+    private fun setLoginFormListener() {
+        /**
+         * Listener for the login form
+         */
         loginOverlay.addLoginListener { e ->
             val isAuthenticated: Boolean = appLogin(e)
             if (isAuthenticated) {
@@ -85,9 +95,13 @@ class Application : VerticalLayout(), RouterLayout {
                 loginOverlay.close()
             }
         }
-        //Datasource
-        // This is only for pure testing,this DB exist only on my computer.
-        // All of these would be moved to another file for production use sake
+    }
+
+    private fun setDataSource() {
+        /** Datasource
+         * This is only for pure testing,this DB exist only on my computer.
+         * All of these would be moved to another file for production use sake
+         */
         val cfg = MysqlDataSource()
         cfg.setURL("jdbc:mysql://127.0.0.1:3306/ciscocoin")
         cfg.user = "alexis"
@@ -132,5 +146,5 @@ class Application : VerticalLayout(), RouterLayout {
         viewContainer.removeAll()
         viewContainer.element.appendChild(content.element)
     }
-
 }
+
