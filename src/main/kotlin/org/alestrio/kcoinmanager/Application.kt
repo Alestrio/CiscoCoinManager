@@ -16,6 +16,7 @@ import com.vaadin.flow.router.RouterLayout
 import com.vaadin.flow.server.PWA
 import org.alestrio.kcoinmanager.data.model.User
 import org.mindrot.jbcrypt.BCrypt
+import java.lang.NullPointerException
 
 
 /**
@@ -48,9 +49,7 @@ class Application : VerticalLayout(), RouterLayout {
                 content { align(center, middle) }
                 /*  NAVBAR */
             }
-            //Login Form
-            getLoginFormLayout()
-        }
+        }.add(getLoginFormLayout())
         //View Container definition
         viewContainer = div{ setSizeFull() }
         //Footer definition
@@ -69,7 +68,7 @@ class Application : VerticalLayout(), RouterLayout {
          */
         return horizontalLayout {
             setSizeFull()
-            content { align(right, middle) }
+            content { align(right, top) }
             //Login overlay
             loginOverlay = LoginOverlay()
             val btn = button("Se connecter")
@@ -86,7 +85,7 @@ class Application : VerticalLayout(), RouterLayout {
          * Listener for the login form
          */
         loginOverlay.addLoginListener { e ->
-            val isAuthenticated: Boolean = Companion.appLogin(this, e)
+            val isAuthenticated: Boolean = appLogin(this, e)
             if (isAuthenticated) {
                 navigateToMainPage()
                 this.isConnected = true
@@ -145,9 +144,15 @@ class Application : VerticalLayout(), RouterLayout {
             }
             //Regular user connection
             else{
-                return try{
-                    val user = User.getOneBy("pseudo= :pseudo"){  ("pseudo" to e?.username) }
-                    return (hashPassword(e?.password) == user.password)
+                return try {
+                    val users = User.findAll()
+                    val user: User?
+                    user = users.find { it.pseudo == e?.username }
+                    return try {
+                        (hashPassword(e?.password) == user!!.password)
+                    } catch (ex: NullPointerException) {
+                        false
+                    }
                 }catch (ex : IllegalStateException){
                     false
                 }
