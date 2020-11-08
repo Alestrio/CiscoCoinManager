@@ -33,7 +33,7 @@ import java.lang.NullPointerException
  * This is the class which is creating the navbar and footer, and handling the changes for view.
  * It's also responsible for checking the connection state of the user.
  */
-@PWA(name = "KCoinManager", shortName = "KCCM")
+@PWA(name = "CiscoCoinManager", shortName = "CCM")
 class Application : VerticalLayout(), RouterLayout {
     private var generalContainer:HorizontalLayout
     private var viewContainer: Div
@@ -54,7 +54,7 @@ class Application : VerticalLayout(), RouterLayout {
                 image(src = "icons/icon.png", alt="icon"){
                     width = "4em"
                 }
-                label("KCoinManager")
+                label("CiscoCoinManager")
                 content { align(left, middle) }
             }
         }
