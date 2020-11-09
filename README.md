@@ -27,8 +27,8 @@ Alternatively, you can install nodejs and npm to your OS:
 To quickly start the app, just type this into your terminal:
 
 ```bash
-git clone https://github.com/Alestrio/KCoinManager
-cd KCoinManager
+git clone https://github.com/Alestrio/CiscoCoinManager
+cd CiscoCoinManager
 ./gradlew appRun
 ```
 
