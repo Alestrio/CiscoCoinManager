@@ -69,6 +69,7 @@ class Application : VerticalLayout(), RouterLayout {
         }
         this.setLoginFormListener()
         this.setDataSource()
+        this.updateBtnDefinition()
     }
 
     private fun getLoginFormLayout() : HorizontalLayout {
@@ -172,8 +173,13 @@ class Application : VerticalLayout(), RouterLayout {
         /**
          * This is the function updating the button when the user logs-in
          */
-        this.loginBtn.text = currentUser?.pseudo
-        this.loginBtn.addClickListener { this.disconnect() }
+        if(currentUser != null){
+            this.loginBtn.text = currentUser?.pseudo
+            this.loginBtn.addClickListener { this.disconnect() }
+        }
+        else{
+            this.setLoginFormListener()
+        }
     }
 
     private fun disconnect(){
@@ -182,8 +188,7 @@ class Application : VerticalLayout(), RouterLayout {
          */
         currentUser = null
         this.loginBtn.text = "Se connecter"
-        this.loginBtn.addClickListener { loginOverlay.isOpened = true }
-        loginOverlay.close()
+        this.updateBtnDefinition()
     }
 
     private fun appLogin(application: Application, e: AbstractLogin.LoginEvent?): Boolean {
