@@ -116,6 +116,9 @@ class Application : VerticalLayout(), RouterLayout {
         }
     }
 
+    private fun navigateToMainPage() {
+    }
+
     private fun updateNavbarDefinition() {
         /**
          * This is the function defining and displaying the right navabr for the current connection state.
@@ -141,7 +144,7 @@ class Application : VerticalLayout(), RouterLayout {
             unregisteredNavbar.content { align(center, middle) }
         this.navbar.removeFromParent()
         this.navbar = unregisteredNavbar
-        if(this.isConnected){
+        if(this.isConnected && currentUser != null){
             if (currentUser!!.pseudo == "ADMIN") this.navbar = adminNavbar
             else this.navbar = userNavbar
         }
@@ -190,7 +193,15 @@ class Application : VerticalLayout(), RouterLayout {
          */
         currentUser = null
         this.loginBtn.text = "Se connecter"
+        this.updateNavbarDefinition()
         this.updateBtnDefinition()
+        this.goToWelcomeView()
+    }
+
+    private fun goToWelcomeView() {
+       this.ui.ifPresent{
+           it.navigate("")
+       }
     }
 
     private fun appLogin(application: Application, e: AbstractLogin.LoginEvent?): Boolean {
