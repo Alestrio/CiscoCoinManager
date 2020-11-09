@@ -23,6 +23,7 @@ import org.alestrio.kcoinmanager.view.admin.AdminBalanceView
 import org.alestrio.kcoinmanager.view.admin.AdminDashboard
 import org.alestrio.kcoinmanager.view.admin.TransactionsView
 import org.alestrio.kcoinmanager.view.admin.UserCreationView
+import org.alestrio.kcoinmanager.view.user.UserChangePasswordView
 import org.alestrio.kcoinmanager.view.user.UserDashboard
 import org.alestrio.kcoinmanager.view.user.UserTransaction
 import org.mindrot.jbcrypt.BCrypt
@@ -131,6 +132,7 @@ class Application : VerticalLayout(), RouterLayout {
         val userNavbar = HorizontalLayout()
             userNavbar.add(RouterLink("Tableau de bord", UserDashboard::class.java))
             userNavbar.add(RouterLink("Transactions", UserTransaction::class.java))
+            userNavbar.add(RouterLink("Changer le mot de passe", UserChangePasswordView::class.java))
             userNavbar.setSizeFull()
             userNavbar.content { align(center, middle) }
         val unregisteredNavbar =  HorizontalLayout()
@@ -230,14 +232,8 @@ class Application : VerticalLayout(), RouterLayout {
 
     companion object {
         /**
-         * This is the Controller-Model for the Application class
-         * Basically, it allows to separate the View from the Logic, without
-         * being bothered by importing/declaring explicitly the Controller-Model
+         * This is the companion object containing the variables that needs to be accessed outside that RouterLayout.
          */
-
-        private fun navigateToMainPage() {
-
-        }
 
         var currentUser: User? = null
 
