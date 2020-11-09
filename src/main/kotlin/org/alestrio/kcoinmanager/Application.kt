@@ -40,7 +40,6 @@ class Application : VerticalLayout(), RouterLayout {
     private var isConnected = false
     private var settings = Database()
     private lateinit var loginOverlay: LoginOverlay
-    private var currentUser: User? = null
     private lateinit var loginBtn : Button
     private var navbar:HorizontalLayout = HorizontalLayout()
 
@@ -140,7 +139,7 @@ class Application : VerticalLayout(), RouterLayout {
         this.navbar.removeFromParent()
         this.navbar = unregisteredNavbar
         if(this.isConnected){
-            if (this.currentUser!!.pseudo == "ADMIN") this.navbar = adminNavbar
+            if (Companion.currentUser!!.pseudo == "ADMIN") this.navbar = adminNavbar
             else this.navbar = userNavbar
         }
         this.generalContainer.addComponentAtIndex(1, this.navbar)
@@ -173,7 +172,7 @@ class Application : VerticalLayout(), RouterLayout {
         /**
          * This is the function updating the button when the user logs-in
          */
-        this.loginBtn.text = this.currentUser?.pseudo
+        this.loginBtn.text = Companion.currentUser?.pseudo
         this.loginBtn.addClickListener { this.disconnect() }
     }
 
@@ -181,7 +180,7 @@ class Application : VerticalLayout(), RouterLayout {
         /**
          * This is the function handling a user logout
          */
-        this.currentUser = null
+        Companion.currentUser = null
         this.loginBtn.text = "Se connecter"
         this.loginBtn.addClickListener { loginOverlay.isOpened = true }
         loginOverlay.close()
@@ -195,10 +194,10 @@ class Application : VerticalLayout(), RouterLayout {
         if(e?.username.equals("admin")) {
             //first connection line, password check is then replaced by hashed password check
             return if(e?.password.equals("admin") && application.settings.getSettingByKey("admin_password")?.equals("admin")!!){
-                this.currentUser = User(id = null, pseudo = "ADMIN", balance = 0, password = "" )
+                Companion.currentUser = User(id = null, pseudo = "ADMIN", balance = 0, password = "" )
                 true
             } else if(BCrypt.checkpw(e?.password, application.settings.getSettingByKey("admin_password"))) {
-                this.currentUser = User(id = null, pseudo = "ADMIN", balance = 0, password = "" )
+                Companion.currentUser = User(id = null, pseudo = "ADMIN", balance = 0, password = "" )
                 true
             } else{
                 false
@@ -212,7 +211,7 @@ class Application : VerticalLayout(), RouterLayout {
                 user = users.find { it.pseudo == e?.username }
                 try {
                     if(BCrypt.checkpw(e?.password, user!!.password)){
-                        this.currentUser = user
+                        Companion.currentUser = user
                         true
                     } else false
                 } catch (ex: NullPointerException) {
@@ -241,6 +240,8 @@ class Application : VerticalLayout(), RouterLayout {
              */
             return BCrypt.hashpw(password!!, BCrypt.gensalt())
         }
+
+        var currentUser: User? = null
 
     }
 }
