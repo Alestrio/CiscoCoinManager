@@ -1,6 +1,5 @@
 package org.alestrio.kcoinmanager
 
-
 import com.github.mvysny.karibudsl.v10.*
 import com.gitlab.mvysny.jdbiorm.JdbiOrm
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource
@@ -26,8 +25,6 @@ import org.alestrio.kcoinmanager.view.admin.UserCreationView
 import org.alestrio.kcoinmanager.view.user.UserChangePasswordView
 import org.alestrio.kcoinmanager.view.user.UserDashboard
 import org.alestrio.kcoinmanager.view.user.UserTransaction
-import org.mindrot.jbcrypt.BCrypt
-import java.lang.NullPointerException
 
 
 /**
@@ -43,6 +40,7 @@ class Application : VerticalLayout(), RouterLayout {
     private lateinit var loginOverlay: LoginOverlay
     private lateinit var loginBtn : Button
     private var navbar:HorizontalLayout = HorizontalLayout()
+    private var loginService:LoginService = LoginService()
 
     init{
         //Navbar definition
@@ -102,7 +100,7 @@ class Application : VerticalLayout(), RouterLayout {
          * Listener for the login form
          */
         loginOverlay.addLoginListener { e ->
-            val isAuthenticated: Boolean = appLogin(this, e)
+            val isAuthenticated: Boolean = appLogin(e)
             if (isAuthenticated) {
                 navigateToMainPage()
                 this.isConnected = true
@@ -199,55 +197,25 @@ class Application : VerticalLayout(), RouterLayout {
     }
 
     private fun goToWelcomeView() {
+        /**
+         * This is the function managing the return to welcomeview
+         */
        this.ui.ifPresent{
            it.navigate("")
        }
     }
 
-    private fun appLogin(application: Application, e: AbstractLogin.LoginEvent?): Boolean {
+    private fun appLogin(e: AbstractLogin.LoginEvent?): Boolean {
         /**
-         * This is the function handling the login logic
+         * This is the function handling the login call to the loginService
          */
-        //Admin connection
-        if(e?.username.equals("admin")) {
-            //first connection line, password check is then replaced by hashed password check
-            return if(e?.password.equals("admin") && application.settings.getSettingByKey("admin_password")?.equals("admin")!!){
-                currentUser = User(id = null, pseudo = "ADMIN", balance = 0, password = "" )
-                true
-            } else if(BCrypt.checkpw(e?.password, application.settings.getSettingByKey("admin_password"))) {
-                currentUser = User(id = null, pseudo = "ADMIN", balance = 0, password = "" )
-                true
-            } else{
-                false
-            }
-        }
-        //Regular user connection
-        else{
-            return try {
-                val users = User.findAll()
-                val user: User?
-                user = users.find { it.pseudo == e?.username }
-                try {
-                    if(BCrypt.checkpw(e?.password, user!!.password)){
-                        currentUser = user
-                        true
-                    } else false
-                } catch (ex: NullPointerException) {
-                    false
-                }
-            }catch (ex : IllegalStateException){
-                false
-            }
-        }
+        return loginService.login(e, settings)
     }
 
     companion object {
         /**
          * This is the companion object containing the variables that needs to be accessed outside that RouterLayout.
          */
-
         var currentUser: User? = null
-
     }
 }
-
