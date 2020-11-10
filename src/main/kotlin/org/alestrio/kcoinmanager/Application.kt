@@ -17,7 +17,6 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.router.RouterLayout
 import com.vaadin.flow.router.RouterLink
 import com.vaadin.flow.server.PWA
-import org.alestrio.kcoinmanager.data.model.User
 import org.alestrio.kcoinmanager.view.admin.AdminBalanceView
 import org.alestrio.kcoinmanager.view.admin.AdminDashboard
 import org.alestrio.kcoinmanager.view.admin.TransactionsView
@@ -142,8 +141,8 @@ class Application : VerticalLayout(), RouterLayout {
             unregisteredNavbar.content { align(center, middle) }
         this.navbar.removeFromParent()
         this.navbar = unregisteredNavbar
-        if(this.isConnected && currentUser != null){
-            if (currentUser!!.pseudo == "ADMIN") this.navbar = adminNavbar
+        if(this.isConnected && loginService.currentUser != null){
+            if (loginService.currentUser!!.pseudo == "ADMIN") this.navbar = adminNavbar
             else this.navbar = userNavbar
         }
         this.generalContainer.addComponentAtIndex(1, this.navbar)
@@ -176,8 +175,8 @@ class Application : VerticalLayout(), RouterLayout {
         /**
          * This is the function updating the button when the user logs-in
          */
-        if(currentUser != null){
-            this.loginBtn.text = currentUser?.pseudo
+        if(loginService.currentUser != null){
+            this.loginBtn.text = loginService.currentUser?.pseudo
             this.loginBtn.addClickListener { this.disconnect() }
         }
         else{
@@ -189,7 +188,7 @@ class Application : VerticalLayout(), RouterLayout {
         /**
          * This is the function handling a user logout
          */
-        currentUser = null
+        loginService.currentUser = null
         this.loginBtn.text = "Se connecter"
         this.updateNavbarDefinition()
         this.updateBtnDefinition()
@@ -212,10 +211,4 @@ class Application : VerticalLayout(), RouterLayout {
         return loginService.login(e, settings)
     }
 
-    companion object {
-        /**
-         * This is the companion object containing the variables that needs to be accessed outside that RouterLayout.
-         */
-        var currentUser: User? = null
-    }
 }
