@@ -1,7 +1,6 @@
 package org.alestrio.kcoinmanager
 
 import com.vaadin.flow.component.login.AbstractLogin
-import org.alestrio.kcoinmanager.data.model.Setting
 import org.alestrio.kcoinmanager.data.model.User
 import org.mindrot.jbcrypt.BCrypt
 import java.lang.NullPointerException
@@ -12,6 +11,7 @@ class LoginService {
      * It's is also the one responsible for keeping the current connected user in memory
      */
     var currentUser: User? = null
+    var isAdmin: Boolean = false
 
     fun disconnect(){
         /**
@@ -79,5 +79,15 @@ class LoginService {
 
     private fun cookieLogout(){
 
+    }
+
+    private fun cookieFetch() : User?{
+        TODO()
+    }
+
+    @JvmName("getCurrentUser1")
+    fun getCurrentUser(): User? {
+        return if (this.currentUser == null) this.cookieFetch()
+        else this.currentUser
     }
 }

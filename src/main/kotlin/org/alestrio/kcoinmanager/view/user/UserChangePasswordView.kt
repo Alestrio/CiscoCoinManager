@@ -5,10 +5,12 @@ import com.vaadin.flow.component.notification.Notification
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.router.Route
 import org.alestrio.kcoinmanager.Application
+import org.alestrio.kcoinmanager.LoginService
 import java.lang.NullPointerException
 
 @Route("user-changepassword",layout = Application::class)
 class UserChangePasswordView: VerticalLayout() {
+    val currentUser = LoginService().getCurrentUser()
     init {
         div {
             h1("Hey ! Pas si vite !")
@@ -19,8 +21,8 @@ class UserChangePasswordView: VerticalLayout() {
                     onLeftClick {
                         try{
                             val notHashedPw = newPw.value
-                            Application.currentUser!!.password = notHashedPw
-                            Application.currentUser!!.hashPassword()
+                            currentUser!!.password = notHashedPw
+                            currentUser.hashPassword()
                             Notification.show("Le mot de passe a bien été mis à jour !")
                         }catch(ex : NullPointerException){
                             Notification.show("Vous n'êtes pas connecté.. Que faites-vous ici ?")
