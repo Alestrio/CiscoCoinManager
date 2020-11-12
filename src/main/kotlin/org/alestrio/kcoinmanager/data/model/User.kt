@@ -12,9 +12,11 @@ data class User(
     override var id : Long? = null,
     var pseudo:String = "",
     var balance:Int = 0,
-    var password:String = ""
+    var password:String = "",
+    var isAdmin:Boolean = false
 
 ): KEntity<Long>{
+
     override fun save(validate: Boolean){
         var modified = Instant.now()
         super.save(validate)
@@ -23,7 +25,6 @@ data class User(
     companion object : Dao<User, Long>(User::class.java)
 
     fun hashPassword(){
-        val oldPw = this.password
         this.password = BCrypt.hashpw(this.password, BCrypt.gensalt())
     }
 }

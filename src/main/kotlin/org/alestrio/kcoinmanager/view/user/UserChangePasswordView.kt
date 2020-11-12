@@ -4,13 +4,14 @@ import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.notification.Notification
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.router.Route
+import eu.vaadinonkotlin.vaadin10.Session
 import org.alestrio.kcoinmanager.Application
 import org.alestrio.kcoinmanager.LoginService
 import java.lang.NullPointerException
 
 @Route("user-changepassword",layout = Application::class)
 class UserChangePasswordView: VerticalLayout() {
-    val currentUser = LoginService().getCurrentUser()
+    private val currentUser = getLoginService().currentUser
     init {
         div {
             h1("Hey ! Pas si vite !")
@@ -32,5 +33,13 @@ class UserChangePasswordView: VerticalLayout() {
                 }
             }
         }
+    }
+    private fun getLoginService(): LoginService {
+        var service: LoginService? = Session["loginService"] as LoginService?
+        if (service == null) {
+            service = LoginService()
+            Session["loginService"] = service
+        }
+        return service
     }
 }

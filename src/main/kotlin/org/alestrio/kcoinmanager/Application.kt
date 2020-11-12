@@ -5,6 +5,7 @@ import com.gitlab.mvysny.jdbiorm.JdbiOrm
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource
 import com.vaadin.flow.component.HasElement
 import com.vaadin.flow.component.Key
+import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.html.Div
 import com.vaadin.flow.component.html.Label
@@ -14,9 +15,11 @@ import com.vaadin.flow.component.login.LoginI18n
 import com.vaadin.flow.component.login.LoginOverlay
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
+import com.vaadin.flow.component.page.Page
 import com.vaadin.flow.router.RouterLayout
 import com.vaadin.flow.router.RouterLink
 import com.vaadin.flow.server.PWA
+import eu.vaadinonkotlin.vaadin10.Session
 import org.alestrio.kcoinmanager.view.admin.AdminBalanceView
 import org.alestrio.kcoinmanager.view.admin.AdminDashboard
 import org.alestrio.kcoinmanager.view.admin.TransactionsView
@@ -39,9 +42,10 @@ class Application : VerticalLayout(), RouterLayout {
     private lateinit var loginOverlay: LoginOverlay
     private lateinit var loginBtn : Button
     private var navbar:HorizontalLayout = HorizontalLayout()
-    private var loginService:LoginService = LoginService()
+    private var loginService:LoginService
 
     init{
+        this.loginService = getLoginService()
         //Navbar definition
         generalContainer = horizontalLayout {
             setSizeFull()
@@ -106,6 +110,7 @@ class Application : VerticalLayout(), RouterLayout {
                 updateBtnDefinition()
                 updateNavbarDefinition()
                 loginOverlay.close()
+                UI.getCurrent().page.reload();
             } else {
                 loginOverlay.isError = true
                 loginOverlay.close()
@@ -141,7 +146,7 @@ class Application : VerticalLayout(), RouterLayout {
             unregisteredNavbar.content { align(center, middle) }
         this.navbar.removeFromParent()
         this.navbar = unregisteredNavbar
-        if(this.isConnected && loginService.currentUser != null){
+        if(loginService.currentUser != null){
             if (loginService.currentUser!!.pseudo == "ADMIN") this.navbar = adminNavbar
             else this.navbar = userNavbar
         }
@@ -176,7 +181,7 @@ class Application : VerticalLayout(), RouterLayout {
          * This is the function updating the button when the user logs-in
          */
         if(loginService.currentUser != null){
-            this.loginBtn.text = loginService.currentUser?.pseudo
+            this.loginBtn.text = loginService.currentUser!!.pseudo
             this.loginBtn.addClickListener { this.disconnect() }
         }
         else{
@@ -197,7 +202,7 @@ class Application : VerticalLayout(), RouterLayout {
 
     private fun goToWelcomeView() {
         /**
-         * This is the function managing the return to welcomeview
+         * This is the function managing the return to comeview
          */
        this.ui.ifPresent{
            it.navigate("")
@@ -206,9 +211,18 @@ class Application : VerticalLayout(), RouterLayout {
 
     private fun appLogin(e: AbstractLogin.LoginEvent?): Boolean {
         /**
-         * This is the function handling the login call to the loginService
+         * This is the function handling the login call to the LoginService
          */
         return loginService.login(e, settings)
+    }
+
+    private fun getLoginService(): LoginService {
+        var service: LoginService? = Session["loginService"] as LoginService?
+        if (service == null) {
+            service = LoginService()
+            Session["loginService"] = service
+        }
+        return service
     }
 
 }
