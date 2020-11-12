@@ -57,12 +57,7 @@ class UserCreationView : VerticalLayout(){
             }
         }
         else {
-            this.ui.ifPresent{
-                it.navigate("forbidden")
-                print("present")
-            }
-            print("forbidden")
-            if(loginService.currentUser != null) print(loginService.currentUser.toString())
+            this.ui.ifPresent { it.navigate("forbidden") }
         }
     }
 

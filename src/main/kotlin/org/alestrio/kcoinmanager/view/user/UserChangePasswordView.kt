@@ -11,27 +11,32 @@ import java.lang.NullPointerException
 
 @Route("user-changepassword",layout = Application::class)
 class UserChangePasswordView: VerticalLayout() {
-    private val currentUser = getLoginService().currentUser
+    private val loginService:LoginService = getLoginService()
+    private val currentUser = loginService.currentUser
     init {
-        div {
-            h1("Hey ! Pas si vite !")
-            label("Vous devez changer votre mot de passe avant de continuer !")
-            formLayout {
-                val newPw = textField("Nouveau mot de passe")
-                button("Valider") {
-                    onLeftClick {
-                        try{
-                            val notHashedPw = newPw.value
-                            currentUser!!.password = notHashedPw
-                            currentUser.hashPassword()
-                            Notification.show("Le mot de passe a bien été mis à jour !")
-                        }catch(ex : NullPointerException){
-                            Notification.show("Vous n'êtes pas connecté.. Que faites-vous ici ?")
+        if(loginService.currentUser != null) {
+            div {
+                h1("Hey ! Pas si vite !")
+                label("Vous devez changer votre mot de passe avant de continuer !")
+                formLayout {
+                    val newPw = textField("Nouveau mot de passe")
+                    button("Valider") {
+                        onLeftClick {
+                            try {
+                                val notHashedPw = newPw.value
+                                currentUser!!.password = notHashedPw
+                                currentUser.hashPassword()
+                                Notification.show("Le mot de passe a bien été mis à jour !")
+                            } catch (ex: NullPointerException) {
+                                Notification.show("Vous n'êtes pas connecté.. Que faites-vous ici ?")
+                            }
                         }
-
                     }
                 }
             }
+        }
+        else{
+            this.ui.ifPresent{ it.navigate("forbidden") }
         }
     }
     private fun getLoginService(): LoginService {

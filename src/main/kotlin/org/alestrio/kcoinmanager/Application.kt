@@ -15,7 +15,6 @@ import com.vaadin.flow.component.login.LoginI18n
 import com.vaadin.flow.component.login.LoginOverlay
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
-import com.vaadin.flow.component.page.Page
 import com.vaadin.flow.router.RouterLayout
 import com.vaadin.flow.router.RouterLink
 import com.vaadin.flow.server.PWA
