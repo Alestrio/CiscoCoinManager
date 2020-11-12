@@ -135,7 +135,7 @@ class Application : VerticalLayout(), RouterLayout {
             adminNavbar.content { align(center, middle) }
         val userNavbar = HorizontalLayout()
             userNavbar.add(RouterLink("Tableau de bord", UserDashboard::class.java))
-            userNavbar.add(RouterLink("Transactions", UserTransaction::class.java))
+            userNavbar.add(RouterLink("Créer une transaction", UserTransaction::class.java))
             userNavbar.add(RouterLink("Changer le mot de passe", UserChangePasswordView::class.java))
             userNavbar.setSizeFull()
             userNavbar.content { align(center, middle) }
