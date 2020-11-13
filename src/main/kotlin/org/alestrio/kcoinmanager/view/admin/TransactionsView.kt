@@ -6,7 +6,9 @@ import com.vaadin.flow.router.Route
 import eu.vaadinonkotlin.vaadin10.Session
 import org.alestrio.kcoinmanager.Application
 import org.alestrio.kcoinmanager.LoginService
-import org.alestrio.kcoinmanager.Transaction
+import org.alestrio.kcoinmanager.data.model.Transaction
+import com.vaadin.flow.data.provider.DataProvider
+
 
 @Route("transactions",layout = Application::class)
 class TransactionsView: VerticalLayout() {
