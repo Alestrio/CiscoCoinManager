@@ -14,9 +14,9 @@ class WelcomeView: VerticalLayout() {
             br()
             label("Ici, vous pouvez consulter votre solde de CiscoCoins,"){ textAlign = "center"}
             br()
-            label("Envoyer ou recevoir des CiscoCoins, ou encore acheter des CiscoCoins !"){ textAlign = "center"}
+            label("Envoyer ou recevoir des CiscoCoins(, ou encore acheter des CiscoCoins !"){ textAlign = "center"}
             br()
-            label("Vous pouvez aussi acheter des produits sur la CiscoBoutique !"){ textAlign = "center"}
+            label("Vous pouvez aussi acheter des produits sur la CiscoBoutique !) ==> Pas aujourd'hui, Billy !"){ textAlign = "center"}
         }
     }
 }
