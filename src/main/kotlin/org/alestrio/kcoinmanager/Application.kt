@@ -155,8 +155,6 @@ class Application : VerticalLayout(), RouterLayout {
 
     private fun setDataSource() {
         /** Datasource
-         * This is only for pure testing,this DB exists only on my computer.
-         * All of these would be moved to another file for production use sake
          */
         val cfg = MysqlDataSource()
         /**** Only for local testing
