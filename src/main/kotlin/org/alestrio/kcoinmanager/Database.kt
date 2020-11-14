@@ -6,20 +6,32 @@ import com.mysql.jdbc.jdbc2.optional.MysqlDataSource
 import org.alestrio.kcoinmanager.data.model.Setting
 import org.mindrot.jbcrypt.BCrypt
 import java.lang.IllegalStateException
+import java.net.URI
 import kotlin.collections.HashMap
 
 class Database {
     private var settings : HashMap<String, String>
 
     init{
-        // This is only for pure testing,this DB exist only on my computer.
-        // All of these would be moved to another file for production use sake
+        /** Datasource
+         */
         val cfg = MysqlDataSource()
+        /**** Only for local testing
         cfg.setURL("jdbc:mysql://127.0.0.1:3306/ciscocoin")
         cfg.user = "alexis"
         cfg.setPassword("alexis")
+         ****/
+        val jdbUri: URI = URI(System.getenv("JAWSDB_URL"))
+
+        val username: String = jdbUri.userInfo.split(":")[0]
+        val password: String = jdbUri.userInfo.split(":")[1]
+        val port: String = java.lang.String.valueOf(jdbUri.port)
+        val jdbUrl = "jdbc:mysql://" + jdbUri.host.toString() + ":" + port + jdbUri.path
+
+        cfg.setURL(jdbUrl)
+        cfg.user = username
+        cfg.setPassword(password)
         JdbiOrm.setDataSource(cfg)
-        this.populateIfFirstRun()
         this.settings = this.fetchApplicationSettings()
     }
 
