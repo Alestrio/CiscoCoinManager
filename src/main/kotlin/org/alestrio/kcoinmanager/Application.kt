@@ -26,6 +26,7 @@ import org.alestrio.kcoinmanager.view.admin.UserCreationView
 import org.alestrio.kcoinmanager.view.user.UserChangePasswordView
 import org.alestrio.kcoinmanager.view.user.UserDashboard
 import org.alestrio.kcoinmanager.view.user.UserTransaction
+import java.net.URI
 
 
 /**
@@ -51,7 +52,7 @@ class Application : VerticalLayout(), RouterLayout {
             //Title and logo
             horizontalLayout {
                 setSizeFull()
-                image(src = "icons/icon.png", alt="icon"){
+                image(src = "icons/icon.png", alt = "icon"){
                     width = "4em"
                 }
                 label("CiscoCoinManager")
@@ -158,9 +159,21 @@ class Application : VerticalLayout(), RouterLayout {
          * All of these would be moved to another file for production use sake
          */
         val cfg = MysqlDataSource()
+        /**** Only for local testing
         cfg.setURL("jdbc:mysql://127.0.0.1:3306/ciscocoin")
         cfg.user = "alexis"
         cfg.setPassword("alexis")
+         ****/
+        val jdbUri: URI = URI(System.getenv("JAWSDB_URL"))
+
+        val username: String = jdbUri.userInfo.split(":")[0]
+        val password: String = jdbUri.userInfo.split(":")[1]
+        val port: String = java.lang.String.valueOf(jdbUri.port)
+        val jdbUrl = "jdbc:mysql://" + jdbUri.host.toString() + ":" + port + jdbUri.path
+
+        cfg.setURL(jdbUrl)
+        cfg.user = username
+        cfg.setPassword(password)
         JdbiOrm.setDataSource(cfg)
     }
 
