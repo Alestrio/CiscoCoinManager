@@ -14,12 +14,12 @@ class Database {
     init{
         // This is only for pure testing,this DB exist only on my computer.
         // All of these would be moved to another file for production use sake
-        val cfg = MysqlDataSource()
+        /*val cfg = MysqlDataSource()
         cfg.setURL("jdbc:mysql://127.0.0.1:3306/ciscocoin")
         cfg.user = "alexis"
         cfg.setPassword("alexis")
         JdbiOrm.setDataSource(cfg)
-        this.populateIfFirstRun()
+        this.populateIfFirstRun()*/
         this.settings = this.fetchApplicationSettings()
     }
 
